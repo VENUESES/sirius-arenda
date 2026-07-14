@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сириус.Аренда</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a237e;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        .tab-btn:hover {
+            background: #f0f0f0;
+        }
+        .tab-btn.active {
+            background: #1a237e;
+            color: white;
+        }
+        .tab {
+            display: none;
+        }
+        .tab.active {
+            display: block;
+        }
+        .form-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            display: none;
+        }
+        .form-container.show {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-primary {
+            background: #1a237e;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0d1555;
+        }
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+        .btn-danger {
+            background: #c62828;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+        .btn-secondary {
+            background: #999;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #777;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: white;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .card-header h3 {
+            margin: 0;
+        }
+        .badge {
+            background: #e3f2fd;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #0d47a1;
+        }
+        .badge-success {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+        .badge-danger {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+        .tag {
+            display: inline-block;
+            background: #f3e5f5;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin: 2px;
+            color: #4a148c;
+        }
+        .loading {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+        }
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        .error {
+            color: #c62828;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 4px;
+        }
+        .card-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        .mt-10 {
+            margin-top: 10px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        .toast-success {
+            background: #2e7d32;
+        }
+        .toast-error {
+            background: #c62828;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏢 Сириус.Аренда</h1>
+    <div class="subtitle">Сервис бронирования пространств</div>
+
+    <!-- ВКЛАДКИ -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('rooms')">🏠 Комнаты</button>
+        <button class="tab-btn" onclick="switchTab('bookings')">📅 Брони</button>
+        <button class="tab-btn" onclick="switchTab('equipment')">🔧 Оборудование</button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ВКЛАДКА КОМНАТЫ -->
+    <!-- ============================================ -->
+    <div id="tab-rooms" class="tab active">
+        <button class="btn btn-primary" onclick="toggleForm('room-form')">➕ Новая комната</button>
+        
+        <div id="room-form" class="form-container">
+            <h3>Создание комнаты</h3>
+            <form onsubmit="createRoom(event)">
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" id="r-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Вместимость *</label>
+                        <input type="number" id="r-capacity" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Оборудование (ID:кол-во, через запятую)</label>
+                        <input type="text" id="r-equipment" placeholder="1:2, 2:1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <input type="text" id="r-desc">
+                </div>
+                <button type="submit" class="btn btn-success">✅ Создать</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleForm('room-form')">Отмена</button>
+            </form>
+        </div>
+
+        <div id="rooms-list"><div class="loading">Загрузка...</div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ВКЛАДКА БРОНИРОВАНИЯ -->
+    <!-- ============================================ -->
+    <div id="tab-bookings" class="tab">
+        <button class="btn btn-primary" onclick="toggleForm('booking-form')">➕ Новое бронирование</button>
+        
+        <div id="booking-form" class="form-container">
+            <h3>Создание бронирования</h3>
+            <form onsubmit="createBooking(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ID комнаты *</label>
+                        <input type="number" id="b-room" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Имя пользователя *</label>
+                        <input type="text" id="b-user" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Начало *</label>
+                        <input type="datetime-local" id="b-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Конец *</label>
+                        <input type="datetime-local" id="b-end" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">✅ Создать</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleForm('booking-form')">Отмена</button>
+            </form>
+        </div>
+
+        <div id="bookings-list"><div class="loading">Загрузка...</div></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ВКЛАДКА ОБОРУДОВАНИЕ -->
+    <!-- ============================================ -->
+    <div id="tab-equipment" class="tab">
+        <button class="btn btn-primary" onclick="toggleForm('equipment-form')">➕ Новое оборудование</button>
+        
+        <div id="equipment-form" class="form-container">
+            <h3>Создание оборудования</h3>
+            <form onsubmit="createEquipment(event)">
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" id="eq-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <input type="text" id="eq-desc">
+                </div>
+                <button type="submit" class="btn btn-success">✅ Создать</button>
+                <button type="button" class="btn btn-secondary" onclick="toggleForm('equipment-form')">Отмена</button>
+            </form>
+        </div>
+
+        <div id="equipment-list"><div class="loading">Загрузка...</div></div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================ -->
+<script>
+const API = 'http://localhost:8000';
+
+// === ВСПОМОГАТЕЛЬНЫЕ ===
+function toggleForm(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('show');
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+    loadData(tab);
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// === ЗАГРУЗКА ДАННЫХ ===
+function loadData(tab) {
+    if (tab === 'rooms') loadRooms();
+    if (tab === 'bookings') loadBookings();
+    if (tab === 'equipment') loadEquipment();
+}
+
+// ============================================================
+//  КОМНАТЫ
+// ============================================================
+async function loadRooms() {
+    try {
+        const res = await fetch(API + '/rooms/');
+        const data = await res.json();
+        const container = document.getElementById('rooms-list');
+        
+        if (!data.length) {
+            container.innerHTML = '<div class="empty">📭 Нет комнат. Создайте первую!</div>';
+            return;
+        }
+
+        container.innerHTML = data.map(r => `
+            <div class="card">
+                <div class="card-header">
+                    <h3>${r.name}</h3>
+                    <span class="badge">👥 ${r.capacity} чел.</span>
+                </div>
+                <div><small>${r.description || 'Нет описания'}</small></div>
+                <div class="mt-10">
+                    ${r.equipment.map(e => `<span class="tag">${e.name}</span>`).join('')}
+                </div>
+                <div class="card-actions">
+                    <button class="btn btn-danger btn-sm" onclick="deleteRoom(${r.id})">🗑 Удалить</button>
+                </div>
+            </div>
+        `).join('');
+    } catch {
+        document.getElementById('rooms-list').innerHTML = '<div class="error">❌ Ошибка загрузки</div>';
+    }
+}
+
+async function createRoom(e) {
+    e.preventDefault();
+    const name = document.getElementById('r-name').value;
+    const capacity = parseInt(document.getElementById('r-capacity').value);
+    const desc = document.getElementById('r-desc').value;
+    const eqStr = document.getElementById('r-equipment').value;
+
+    const equipment = [];
+    if (eqStr) {
+        eqStr.split(',').forEach(item => {
+            const parts = item.trim().split(':');
+            if (parts.length === 2) {
+                equipment.push({
+                    equipment_id: parseInt(parts[0]),
+                    count: parseInt(parts[1])
+                });
+            }
+        });
+    }
+
+    try {
+        const res = await fetch(API + '/rooms/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, capacity, description: desc, equipment})
+        });
+        
+        if (res.ok) {
+            showToast('✅ Комната создана!', 'success');
+            toggleForm('room-form');
+            document.getElementById('room-form').querySelector('form').reset();
+            loadRooms();
+        } else {
+            const err = await res.json();
+            showToast('❌ ' + JSON.stringify(err.detail || err), 'error');
+        }
+    } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+    }
+}
+
+async function deleteRoom(id) {
+    if (!confirm('Удалить комнату?')) return;
+    try {
+        const res = await fetch(API + '/rooms/' + id, {method: 'DELETE'});
+        if (res.ok) {
+            showToast('✅ Комната удалена', 'success');
+            loadRooms();
+        } else {
+            showToast('❌ Ошибка удаления', 'error');
+        }
+    } catch {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+// ============================================================
+//  БРОНИРОВАНИЯ
+// ============================================================
+async function loadBookings() {
+    try {
+        const roomsRes = await fetch(API + '/rooms/');
+        const rooms = await roomsRes.json();
+        const container = document.getElementById('bookings-list');
+        
+        if (!rooms.length) {
+            container.innerHTML = '<div class="empty">📭 Нет комнат для просмотра бронирований</div>';
+            return;
+        }
+
+        let html = '';
+        const today = new Date().toISOString().split('T')[0];
+        
+        for (const room of rooms) {
+            const res = await fetch(`${API}/rooms/${room.id}/bookings?date=${today}`);
+            const bookings = await res.json();
+            
+            if (bookings.length) {
+                html += `<h4 style="margin:15px 0 8px;">${room.name}</h4>`;
+                html += bookings.map(b => `
+                    <div class="card" style="background:#f5f5f5;">
+                        <div class="card-header">
+                            <span>👤 ${b.user_name}</span>
+                            <span class="badge badge-success">${b.status}</span>
+                        </div>
+                        <div>
+                            🕐 ${b.start_time.replace('T', ' ').slice(0,16)} — ${b.end_time.replace('T', ' ').slice(0,16)}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-danger btn-sm" onclick="cancelBooking(${b.id})">❌ Отменить</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        container.innerHTML = html || '<div class="empty">📭 Нет бронирований на сегодня</div>';
+    } catch {
+        document.getElementById('bookings-list').innerHTML = '<div class="error">❌ Ошибка загрузки</div>';
+    }
+}
+
+async function createBooking(e) {
+    e.preventDefault();
+    const room_id = parseInt(document.getElementById('b-room').value);
+    const user_name = document.getElementById('b-user').value;
+    const start_time = document.getElementById('b-start').value;
+    const end_time = document.getElementById('b-end').value;
+
+    try {
+        const res = await fetch(API + '/bookings/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({room_id, user_name, start_time, end_time})
+        });
+        
+        if (res.ok) {
+            showToast('✅ Бронирование создано!', 'success');
+            toggleForm('booking-form');
+            document.getElementById('booking-form').querySelector('form').reset();
+            loadBookings();
+        } else {
+            const err = await res.json();
+            if (res.status === 409) {
+                showToast('❌ Комната уже занята на это время!', 'error');
+            } else {
+                showToast('❌ ' + JSON.stringify(err.detail || err), 'error');
+            }
+        }
+    } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+    }
+}
+
+async function cancelBooking(id) {
+    if (!confirm('Отменить бронирование?')) return;
+    try {
+        const res = await fetch(API + '/bookings/' + id, {method: 'DELETE'});
+        if (res.ok) {
+            showToast('✅ Бронирование отменено', 'success');
+            loadBookings();
+        } else {
+            showToast('❌ Ошибка отмены', 'error');
+        }
+    } catch {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+// ============================================================
+//  ОБОРУДОВАНИЕ
+// ============================================================
+async function loadEquipment() {
+    try {
+        const res = await fetch(API + '/equipment/');
+        const data = await res.json();
+        const container = document.getElementById('equipment-list');
+        
+        if (!data.length) {
+            container.innerHTML = '<div class="empty">📭 Нет оборудования</div>';
+            return;
+        }
+
+        container.innerHTML = data.map(e => `
+            <div class="card">
+                <div class="card-header">
+                    <h3>${e.name}</h3>
+                    <span class="badge">ID: ${e.id}</span>
+                </div>
+                <div><small>${e.description || 'Без описания'}</small></div>
+                <div class="card-actions">
+                    <button class="btn btn-danger btn-sm" onclick="deleteEquipment(${e.id})">🗑 Удалить</button>
+                </div>
+            </div>
+        `).join('');
+    } catch {
+        document.getElementById('equipment-list').innerHTML = '<div class="error">❌ Ошибка загрузки</div>';
+    }
+}
+
+async function createEquipment(e) {
+    e.preventDefault();
+    const name = document.getElementById('eq-name').value;
+    const description = document.getElementById('eq-desc').value;
+
+    try {
+        const res = await fetch(API + '/equipment/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, description})
+        });
+        
+        if (res.ok) {
+            showToast('✅ Оборудование создано!', 'success');
+            toggleForm('equipment-form');
+            document.getElementById('equipment-form').querySelector('form').reset();
+            loadEquipment();
+        } else {
+            const err = await res.json();
+            showToast('❌ ' + JSON.stringify(err.detail || err), 'error');
+        }
+    } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+    }
+}
+
+async function deleteEquipment(id) {
+    if (!confirm('Удалить оборудование?')) return;
+    try {
+        const res = await fetch(API + '/equipment/' + id, {method: 'DELETE'});
+        if (res.ok) {
+            showToast('✅ Оборудование удалено', 'success');
+            loadEquipment();
+        } else {
+            showToast('❌ Ошибка удаления', 'error');
+        }
+    } catch {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+// ============================================================
+//  АВТОЗАГРУЗКА
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Устанавливаем дату по умолчанию для формы бронирования
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    document.getElementById('b-start').value = now.toISOString().slice(0, 16);
+    now.setHours(now.getHours() + 2);
+    document.getElementById('b-end').value = now.toISOString().slice(0, 16);
+    
+    loadRooms();
+});
+</script>
+
+</body>
+</html>
